@@ -1,0 +1,33 @@
+#+Title: Imbalance data research flow
+#+LANGUAGE: en
+#+OPTIONS: toc:nil h:4 html-postamble:nil html-preamble:t tex:t f:t
+#+OPTIONS: prop:("VERSION")
+#+HTML_DOCTYPE: <!DOCTYPE html>
+#+HTML_HEAD: <link href="http://fonts.googleapis.com/css?family=Roboto+Slab:400,700|Inconsolata:400,700" rel="stylesheet" type="text/css" />
+#+HTML_HEAD: <link href="/Users/Patrick/Git/org-spec/css/style.css" rel="stylesheet" type="text/css" />
+#+AUTHOR: jiancheng.zhai
+#+EMAIL: jiancheng.zhai@ipinyou.com
+
+#+LINK: gh    https://github.com/
+#+LINK: rfc   https://tools.ietf.org/html/
+#+LINK: thing https://github.com/thi-ng/
+#+LINK: w3    https://w3.org/TR/
+#+LINK: wiki  https://en.wikipedia.org/wiki/
+
+# #+HTML: <div class="outline-2" id="meta">
+# | *Author* | {{{author}}} ({{{email}}})    |
+# | *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
+# #+HTML: </div>
+
+#+TOC: headlines 3
+* 要解决的问题
+* 调研资料
+* 理论
+* 实践
+** 代码
+#+BEGIN_SRC python :session
+
+#+END_SRC
+
+
+
