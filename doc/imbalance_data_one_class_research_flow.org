@@ -14,20 +14,71 @@
 #+LINK: w3    https://w3.org/TR/
 #+LINK: wiki  https://en.wikipedia.org/wiki/
 
-# #+HTML: <div class="outline-2" id="meta">
-# | *Author* | {{{author}}} ({{{email}}})    |
-# | *Date*   | {{{time(%Y-%m-%d %H:%M:%S)}}} |
-# #+HTML: </div>
-
 #+TOC: headlines 3
-* 要解决的问题
-* 调研资料
-* 理论
-* 实践
-** 代码
+* 问题
+
+* 方案
+** under-sampling
+** over-sampling
+** one-class
+
+* 实验
+
+** init
 #+BEGIN_SRC python :session
+import matplotlib.pyplot as plt
+import matplotlib
+import seaborn as sns
+from sklearn.datasets import make_moons
+from imblearn.datasets import make_imbalance
+matplotlib.use('Agg')
+sns.set()
+almost_black = '#262626'
+palette = sns.color_palette()
 
 #+END_SRC
 
+#+RESULTS:
 
+** 生成数据
+#+NAME: Generate fake data
+#+BEGIN_SRC python :session :exports both :results file
+  X, y = make_moons(n_samples=200,
+                    shuffle=True,
+                    noise=0.5,
+                    random_state=10)
+  ratio = 0.1
+  X_, y_ = make_imbalance(X, y, ratio=ratio, min_c_=1)
+ 
+  #fig = plt.figure()
+  #ax = fig.add_subplot(111)
+  plt.gcf()
+  plt.plot(X_[y_ == 0, 0],
+           X_[y_ == 0, 1],
+           label="Class #0",
+           alpha=0.5,
+           edgecolor=almost_black,
+           facecolor=palette[0],
+           linewidth=0.15)
+
+  plt.plot(X_[y_ == 1, 0],
+           X_[y_ == 1, 1],
+           label="Class #1",
+           alpha=0.5,
+           edgecolor=almost_black,
+           facecolor=palette[2],
+           linewidth=0.15)
+
+  #fig1 = plt.gcf()
+
+  #plt.tight_layout()
+  #plt.draw()
+  #plt.show()
+  img_save_path = "img/analysis-of-imbalanced-data.png"
+  plt.savefig(img_save_path)
+  img_save_path
+#+END_SRC
+
+* 参考材料
+  - [[https://github.com/scikit-learn-contrib/imbalanced-learn.git][imbalance-learn]]
 
