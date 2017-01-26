@@ -26,58 +26,88 @@
 
 ** init
 #+BEGIN_SRC python :session
-import matplotlib.pyplot as plt
-import matplotlib
-import seaborn as sns
-from sklearn.datasets import make_moons
-from imblearn.datasets import make_imbalance
-matplotlib.use('Agg')
-sns.set()
-almost_black = '#262626'
-palette = sns.color_palette()
+  import matplotlib.pyplot as plt
+  import matplotlib
+  import numpy as np
+  import seaborn as sns
+  from sklearn.pipeline import Pipeline
+  from sklearn import linear_model
+  from sklearn.datasets import make_moons
+  from imblearn.datasets import make_imbalance
+  matplotlib.use('Agg')
+  sns.set()
+  almost_black = '#262626'
+  palette = sns.color_palette()
 
 #+END_SRC
 
-#+RESULTS:
+
 
 ** 生成数据
 #+NAME: Generate fake data
 #+BEGIN_SRC python :session :exports both :results file
-  X, y = make_moons(n_samples=200,
+  X, y = make_moons(n_samples=500000,
                     shuffle=True,
                     noise=0.5,
                     random_state=10)
-  ratio = 0.1
+  ratio = 0.001
+  # make training set
   X_, y_ = make_imbalance(X, y, ratio=ratio, min_c_=1)
- 
-  #fig = plt.figure()
-  #ax = fig.add_subplot(111)
-  plt.gcf()
-  plt.plot(X_[y_ == 0, 0],
-           X_[y_ == 0, 1],
-           label="Class #0",
-           alpha=0.5,
-           edgecolor=almost_black,
-           facecolor=palette[0],
-           linewidth=0.15)
 
-  plt.plot(X_[y_ == 1, 0],
-           X_[y_ == 1, 1],
-           label="Class #1",
-           alpha=0.5,
-           edgecolor=almost_black,
-           facecolor=palette[2],
-           linewidth=0.15)
+  # make test set
+  #tX_ = np.setdiff1d(X, X_)
+  #tX_ = X[X_ not in X]
+  all_data = [item for item in zip(X.tolist(), y)]
+
+  #np.array(list(zip(X, y)))
+  train_set = [item for item in zip(X_.tolist(), y_)]
+  #np.array(list(zip(X_.tolist(), y_)))
+  #test_set = [ item for item in all_data if item[0] not in X_]
+  test_set = np.setdiff1d(all_data, train_set)
+
+  fig = plt.figure()
+  ax = fig.add_subplot(111)
+  #plt.gcf()
+  ax.scatter(X_[y_ == 0, 0],
+             X_[y_ == 0, 1],
+             label="Class #0",
+             alpha=0.5,
+             edgecolor=almost_black,
+             facecolor=palette[0],
+             linewidth=0.15)
+
+  ax.scatter(X_[y_ == 1, 0],
+             X_[y_ == 1, 1],
+             label="Class #1",
+             alpha=0.5,
+             edgecolor=almost_black,
+             facecolor=palette[2],
+             linewidth=0.15)
 
   #fig1 = plt.gcf()
-
-  #plt.tight_layout()
+  plt.tight_layout()
   #plt.draw()
-  #plt.show()
-  img_save_path = "img/analysis-of-imbalanced-data.png"
-  plt.savefig(img_save_path)
+  plt.show()
+  img_save_path = "img/generate-imbalanced-data.png"
+  #plt.savefig(img_save_path)
   img_save_path
 #+END_SRC
+
+
+#+RESULTS: Generate fake data
+
+** base line - logistic regression
+#+NAME: a naive model
+#+BEGIN_SRC python :session :exports both :results file
+  # using X_ y_ as training data, the X, y exclude X_, y_ as testing data
+  lr = linear_model.LogisticRegression(solver='lbfgs')
+  lr.fit(X_, y_)
+
+  #pipe = Pipeline(steps=[('logistic', logistic)])
+
+#+END_SRC
+
+** one class
 
 * 参考材料
   - [[https://github.com/scikit-learn-contrib/imbalanced-learn.git][imbalance-learn]]
