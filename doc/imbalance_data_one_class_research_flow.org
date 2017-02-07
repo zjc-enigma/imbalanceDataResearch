@@ -43,7 +43,7 @@
 
 
 
-** 生成数据
+** 生成 imbalanced 数据
 #+NAME: Generate fake data
 #+BEGIN_SRC python :session :exports both :results file
   from sklearn.utils import check_random_state, check_X_y
@@ -85,19 +85,6 @@
 
 
 
-  # make test set
-  # tX_ = np.setdiff1d(X, X_)
-  # tX_ = X[X_ not in X]
-  #X_test = [ for i, j in zip(X, y) if ]
-
-  all_data = [item for item in zip(X.tolist(), y)]
-
-  #np.array(list(zip(X, y)))
-  train_set = [item for item in zip(X_.tolist(), y_)]
-  #np.array(list(zip(X_.tolist(), y_)))
-  #test_set = [ item for item in all_data if item[0] not in X_]
-  test_set = np.setdiff1d(all_data, train_set)
-
   fig = plt.figure()
   ax = fig.add_subplot(111)
   #plt.gcf()
@@ -117,17 +104,29 @@
              facecolor=palette[2],
              linewidth=0.15)
 
-  #fig1 = plt.gcf()
   plt.tight_layout()
-  #plt.draw()
   plt.show()
   img_save_path = "img/generate-imbalanced-data.png"
   #plt.savefig(img_save_path)
-  img_save_path
+  #img_save_path
 #+END_SRC
 
 
 #+RESULTS: Generate fake data
+
+** 划分训练集，测试集
+#+NAME: Generate fake data
+#+BEGIN_SRC python :session :exports both :results file
+# make test set
+#tX_ = np.setdiff1d(X, X_)
+#tX_ = X[X_ not in X]
+#all_data = [item for item in zip(X.tolist(), y)]
+#np.array(list(zip(X, y)))
+#train_set = [item for item in zip(X_.tolist(), y_)]
+#np.array(list(zip(X_.tolist(), y_)))
+#test_set = [ item for item in all_data if item[0] not in X_]
+#test_set = np.setdiff1d(all_data, train_set)
+#+END_SRC
 
 ** base line - logistic regression
 #+NAME: a naive model
