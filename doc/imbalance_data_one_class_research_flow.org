@@ -46,17 +46,50 @@
 ** 生成数据
 #+NAME: Generate fake data
 #+BEGIN_SRC python :session :exports both :results file
+  from sklearn.utils import check_random_state, check_X_y
+  import pandas as pd
+
   X, y = make_moons(n_samples=500000,
                     shuffle=True,
                     noise=0.5,
                     random_state=10)
-  ratio = 0.001
+
   # make training set
-  X_, y_ = make_imbalance(X, y, ratio=ratio, min_c_=1)
+  #X_, y_ = make_imbalance(X, y, ratio=ratio, min_c_=1)
+
+  df_origin = pd.DataFrame(X)
+  df_origin['y'] = y
+
+
+  min_c_ = 1
+  ratio = 0.001
+  mask = y == min_c_
+
+  random_state = None
+  random_state = check_random_state(random_state)
+  n_min_samples = int(np.count_nonzero(y != min_c_) * ratio)
+
+  idx_maj = np.where(~mask)[0]
+  idx_min = np.where(mask)[0]
+  idx_min = random_state.choice(idx_min, size=n_min_samples, replace=False)
+  idx = np.concatenate((idx_min, idx_maj), axis=0)
+
+  df_train = df_origin.iloc[idx]
+  train_idx = df_origin.index.isin(idx)
+  df_test = df_origin[~train_idx]
+
+  X_train = df_train.ix[:, :2]
+  y_train = df_train['y']
+  X_test = df_test.ix[:, :2]
+  y_test = df_test['y']
+
+
 
   # make test set
-  #tX_ = np.setdiff1d(X, X_)
-  #tX_ = X[X_ not in X]
+  # tX_ = np.setdiff1d(X, X_)
+  # tX_ = X[X_ not in X]
+  #X_test = [ for i, j in zip(X, y) if ]
+
   all_data = [item for item in zip(X.tolist(), y)]
 
   #np.array(list(zip(X, y)))
@@ -101,14 +134,57 @@
 #+BEGIN_SRC python :session :exports both :results file
   # using X_ y_ as training data, the X, y exclude X_, y_ as testing data
   lr = linear_model.LogisticRegression(solver='lbfgs')
-  lr.fit(X_, y_)
+  modol = lr.fit(df_train.ix[:, :2], df_train['y'])
 
   #pipe = Pipeline(steps=[('logistic', logistic)])
 
 #+END_SRC
 
-** one class
+** OCSVM
+#+NAME: a naive model
+#+BEGIN_SRC python :session :exports both :results file
+  from sklearn.svm import OneClassSVM
+  from sklearn.svm import SVC
+  from sklearn.multiclass import OneVsRestClassifier
+  from sklearn.ensemble import BaggingClassifier, RandomForestClassifier
 
+
+  # classifiers = {
+  #     "OCSVM": OneClassSVM(nu=0.1, kernel='rbf', gamma=0.1),
+  # }
+
+
+  ocsvm_clf = OneClassSVM(kernel='linear')
+
+  #for i, (clf_name, clf) in enumerate(classifiers.items()):
+  ocsvm_clf.fit(X_train, y_train)
+  pred_test = ocsvm_clf.pred(X_test)
+
+  #y_pred_train = clf.predict(X_train)
+  n_estimators = 10
+
+  # clf = OneVsRestClassifier(BaggingClassifier(
+  #     SVC(kernel='linear', probability=True, class_weight='auto'),
+  #     max_samples=1.0 / n_estimators, n_estimators = n_estimators), n_jobs=88)
+
+  clf = OneVsRestClassifier(SVC(kernel='rbf', probability=True), n_jobs=88)
+  clf.fit(X_train, y_train)
+
+  pred_test = clf.predict(X_test)
+
+  #proba_test = clf.predict_proba(X_test)
+  from sklearn.metrics import accuracy_score
+  from sklearn.metrics import auc
+  from sklearn.metrics import roc_curve
+
+  # fpr, tpr, thresholds = roc_curve(y_test, pred_test, pos_label=1)
+  # auc(fpr, tpr)
+  # proba_test = clf.predict_proba(X_test)
+  # accuracy_score(y_test, proba_test)
+  # #clf.score(X_test, y_test, sample_weight=None)
+  # auc
+
+#+END_SRC
 * 参考材料
   - [[https://github.com/scikit-learn-contrib/imbalanced-learn.git][imbalance-learn]]
 
