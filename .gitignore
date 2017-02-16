@@ -1,1 +1,4 @@
 data/*
+kddcup99
+bin/*.csv
+bin/__pycache__
