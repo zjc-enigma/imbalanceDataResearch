@@ -2,30 +2,28 @@ import numpy as np
 import pandas as pd
 from sklearn.svm import OneClassSVM
 #from mkdata import X_train, X_test, y_train, y_test
-from mkdata import X, y, idx
+from mkdata import tx_train, tx_label_train, tx_test, tx_label_test
 import pickle
 
 
-X_imba = X[idx]
-y_imba = y[idx]
+X_train = tx_train[np.where(tx_label_train==1)]
+X_test = tx_test
+labels = tx_label_test.values
 
+svm = OneClassSVM(kernel='rbf',
+                  gamma=1.0/X_train.shape[0],
+                  tol=0.001,
+                  nu=0.5,
+                  shrinking=True,
+                  cache_size=80)
 
-X_train = X_imba[y_imba==1, ]
-labels = y_imba
-
-
-df_train = pd.DataFrame(X_train)
-#labels = pd.Series(y_train)
-
-
-svm = OneClassSVM(kernel='rbf', gamma=1.0/df_train.shape[0], tol=0.001, nu=0.5, shrinking=True, cache_size=80)
 svm = svm.fit(X_train)
 
 #svm = OneClassSVM(kernel='rbf', gamma=1.0/df.shape[0], tol=0.001, nu=0.5, shrinking=True, cache_size=80)
 #svm = svm.fit(df.values)
 #pickle.dump(svm, open('ocsvm_on_fake_data.model', 'wb'))
 
-scores = svm.decision_function(X_imba).flatten()
+scores = svm.decision_function(X_test).flatten()
 maxvalue = np.max(scores)
 scores = maxvalue - scores
 

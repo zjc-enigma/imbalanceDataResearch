@@ -45,21 +45,22 @@ tx_df.columns = tx_headers.values[0]
 tx_labels = tx_df.label
 
 # TODO device os optim
-tx_fea_df = tx_df[[
-    'ActionPlatform',]]
-
 # tx_fea_df = tx_df[[
-#     'ActionPlatform',
-#     'AgentAppId',
-#     'DeviceOs',
-#     'DeviceBrand',
-#     'DeviceModel',
 #     'IdAdUnitId',
-#     'company',
-#     'GeoId',
-#     'CreativeId',
-#     'width',
-#     'height']]
+# ]]
+
+tx_fea_df = tx_df[[
+    'ActionPlatform',
+    'AgentAppId',
+    'DeviceOs',
+    'DeviceBrand',
+    'DeviceModel',
+    'IdAdUnitId',
+    'company',
+    'GeoId',
+    'CreativeId',
+    'width',
+    'height']]
 
 # convert all int column to string
 tx_fea_df = tx_fea_df.applymap(str)
@@ -70,5 +71,12 @@ tx_label_encoded_df = tx_fea_df.apply(lenc.fit_transform, axis=0)
 enc = preprocessing.OneHotEncoder()
 tx_onehot_encoded_df = enc.fit_transform(tx_label_encoded_df)
 
+tx_train, tx_test, tx_label_train, tx_label_test = train_test_split(
+    tx_onehot_encoded_df,
+    tx_labels,
+    test_size=0.33,
+    random_state=42)
 
 
+
+tx_onehot_encoded_labels = enc.fit_transform(pd.DataFrame(tx_labels))

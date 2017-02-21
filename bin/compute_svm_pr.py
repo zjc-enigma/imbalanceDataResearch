@@ -11,7 +11,9 @@ grouped = df.groupby(0)
 scores = grouped.get_group(1)
 df['binary_truth'].iloc[scores.index] = 1
 
-pr_curve_precision, pr_curve_recall, thresholds = precision_recall_curve(df['binary_truth'].values, df[1].values)
+pr_curve_precision, pr_curve_recall, thresholds = precision_recall_curve(
+    df['binary_truth'].values,
+    df[1].values)
 
 # sort so that recall is increasing
 #ix = pr_curve_recall.argsort()
