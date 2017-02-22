@@ -32,6 +32,8 @@ display_step = 1
 
 fea_vec_num = tx_train.shape[1]
 label_vec_num = 2
+train_num = tx_train.shape[0]
+test_num = tx_test.shape[0]
 
 # tf Graph Input
 x = tf.placeholder(tf.float32, [None, fea_vec_num]) # mnist data image of shape 28*28=784
@@ -41,7 +43,7 @@ y = tf.placeholder(tf.float32, [None, label_vec_num]) # 0-9 digits recognition =
 W = tf.Variable(tf.zeros([fea_vec_num, label_vec_num]))
 b = tf.Variable(tf.zeros([label_vec_num]))
 
-# Construct model
+
 pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
 
 # Minimize error using cross entropy
@@ -59,7 +61,7 @@ with tf.Session() as sess:
     # Training cycle
     for epoch in range(training_epochs):
         avg_cost = 0.
-        total_batch = int(fea_vec_num/batch_size)
+        total_batch = int(train_num/batch_size)
         # Loop over all batches
         for i in range(total_batch):
             begin_idx = batch_size*i
@@ -70,17 +72,28 @@ with tf.Session() as sess:
             # Compute average loss
             avg_cost += c / total_batch
 
-        break
+        #break
         # Display logs per epoch step
         if (epoch+1) % display_step == 0:
             print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
 
     print("Optimization Finished!")
 
+    with tf.device('/cpu:0'):
     # Test model
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    # Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        total_batch = int(test_num/batch_size)
 
-    #print("Accuracy:", accuracy.eval({x: tx_test.toarray(), y: tx_label_test.toarray()}))
+        correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+        # Calculate accuracy
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        avg_accuracy = 0.
+
+        for i in range(total_batch):
+            begin_idx = batch_size*i
+            batch_xs = tx_test[begin_idx:begin_idx+batch_size,  ]
+            batch_ys = tx_label_test[begin_idx:begin_idx+batch_size, ]
+            a = sess.run(accuracy.eval, feed_dict={x: batch_xs.toarray(), y: batch_ys.toarray()})
+            avg_cost +
+
+        #print("Accuracy:", accuracy.eval({x: tx_test.toarray(), y: tx_label_test.toarray()}))
 
