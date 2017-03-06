@@ -26,7 +26,7 @@ tx_label_test = enc.fit_transform(pd.DataFrame(tx_label_test))
 
 # Parameters
 learning_rate = 0.01
-training_epochs = 2
+training_epochs = 30
 batch_size = 1000
 display_step = 1
 
@@ -45,7 +45,7 @@ W = tf.Variable(tf.zeros([fea_vec_num, label_vec_num]))
 b = tf.Variable(tf.zeros([label_vec_num]))
 
 #pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
-pred = tf.sigmoid(tf.matmul(x, W) + b) # Softmax
+pred = tf.sigmoid(tf.matmul(x, W) + b) # Sigmoid
 
 # Minimize error using cross entropy
 cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), reduction_indices=1))
@@ -80,9 +80,6 @@ for epoch in range(training_epochs):
         print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
 
 print("Optimization Finished!")
-
-
-
 
 # with tf.device('/cpu:0'):
 # Test model
